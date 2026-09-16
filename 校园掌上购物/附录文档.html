@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园掌上购物系统 - 附录文档</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', SimHei, sans-serif; line-height: 1.8; color: #333; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 30px; }
+        h1 { text-align: center; font-size: 28px; margin-bottom: 30px; color: #1a1a1a; }
+        h2 { font-size: 22px; margin: 30px 0 20px; padding-bottom: 10px; border-bottom: 2px solid #4a6cf7; color: #4a6cf7; }
+        h3 { font-size: 18px; margin: 20px 0 15px; color: #2c3e50; }
+        h4 { font-size: 16px; margin: 15px 0 10px; color: #34495e; }
+        p { margin: 10px 0; text-indent: 2em; }
+        ul, ol { margin: 10px 0 10px 30px; }
+        li { margin: 8px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        table, th, td { border: 1px solid #ddd; }
+        th, td { padding: 12px; text-align: left; }
+        th { background-color: #f5f7fa; font-weight: bold; }
+        .code-block { background-color: #f8f9fa; border-radius: 6px; padding: 15px; margin: 15px 0; overflow-x: auto; font-family: 'Consolas', 'Monaco', monospace; font-size: 14px; line-height: 1.6; }
+        .code-block pre { margin: 0; white-space: pre-wrap; }
+        .section { margin: 25px 0; }
+        .role-box { background-color: #e8f4fd; border-left: 4px solid #4a6cf7; padding: 15px 20px; margin: 15px 0; }
+        .func-box { background-color: #f9f9f9; border-radius: 8px; padding: 20px; margin: 15px 0; }
+        .func-title { font-weight: bold; color: #2c3e50; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>校园掌上购物系统 - 附录文档</h1>
+        
+        <!-- 附录一：系统使用说明书 -->
+        <h2>附录一：系统使用说明书</h2>
+        
+        <div class="section">
+            <h3>1. 系统概述</h3>
+            <p>校园掌上购物系统是一款专为校园场景设计的综合性购物平台，采用Vue 3 + TypeScript + Element Plus技术栈开发，提供用户、商家、管理员三种角色的完整功能支持。系统主要包含商品管理、店铺管理、订单管理、论坛互动等核心模块。</p>
+            <p><strong>技术架构：</strong>前端框架采用Vue 3，状态管理使用Pinia，路由管理使用Vue Router，UI组件库为Element Plus，图表组件使用ECharts，构建工具为Vite。</p>
+        </div>
+        
+        <div class="section">
+            <h3>2. 用户角色说明</h3>
+            <p>系统支持四种用户角色，不同角色拥有不同的功能权限：</p>
+            
+            <div class="role-box">
+                <strong>管理员</strong>
+                <ul>
+                    <li>商品管理：新增、修改、删除、查看、审核、出入库、查看评论、回复</li>
+                    <li>店铺管理：审核、查看、修改、删除、查看评论、回复</li>
+                    <li>订单管理：查看所有状态订单</li>
+                    <li>用户管理：新增、删除、查看</li>
+                    <li>商家管理：新增、修改、删除、查看</li>
+                    <li>系统管理：轮播图管理、系统通知</li>
+                    <li>出入库管理、论坛管理、在线留言管理</li>
+                </ul>
+            </div>
+            
+            <div class="role-box">
+                <strong>商家</strong>
+                <ul>
+                    <li>商品管理：新增、删除、修改、查看、出入库、查看评论、回复</li>
+                    <li>店铺管理：新增、删除、修改、查看、查看评论、回复</li>
+                    <li>订单管理：查看并处理订单（发货等操作）</li>
+                    <li>系统通知、论坛管理、在线留言</li>
+                </ul>
+            </div>
+            
+            <div class="role-box">
+                <strong>用户</strong>
+                <ul>
+                    <li>商品管理：查看商品、查看评论、回复评论</li>
+                    <li>店铺信息：查看店铺、查看评论、回复评论</li>
+                    <li>我的收藏管理：查看、删除收藏</li>
+                    <li>系统通知、论坛、在线留言</li>
+                </ul>
+            </div>
+            
+            <div class="role-box">
+                <strong>游客</strong>
+                <ul>
+                    <li>仅可查看系统通知</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>3. 功能模块介绍</h3>
+            
+            <div class="func-box">
+                <div class="func-title">3.1 商品管理模块</div>
+                <ul>
+                    <li><strong>商品列表：</strong>展示所有商品信息，支持分页、搜索、筛选</li>
+                    <li><strong>商品详情：</strong>查看商品详细信息、图片、价格、库存等</li>
+                    <li><strong>商品操作：</strong>新增、编辑、删除商品，审核商品状态</li>
+                    <li><strong>出入库管理：</strong>记录商品入库、出库操作，更新库存</li>
+                    <li><strong>商品评论：</strong>查看用户评论，进行回复操作</li>
+                </ul>
+            </div>
+            
+            <div class="func-box">
+                <div class="func-title">3.2 店铺管理模块</div>
+                <ul>
+                    <li><strong>店铺列表：</strong>展示所有店铺信息，支持搜索筛选</li>
+                    <li><strong>店铺详情：</strong>查看店铺基本信息、商品列表</li>
+                    <li><strong>店铺审核：</strong>管理员审核商家店铺申请</li>
+                    <li><strong>店铺评论：</strong>查看店铺评论并回复</li>
+                </ul>
+            </div>
+            
+            <div class="func-box">
+                <div class="func-title">3.3 订单管理模块</div>
+                <ul>
+                    <li><strong>订单列表：</strong>按状态分类展示（未支付、已支付、已发货、已完成、已取消、已退款）</li>
+                    <li><strong>订单详情：</strong>查看订单详细信息、商品清单、物流信息</li>
+                    <li><strong>订单操作：</strong>商家可对已支付订单进行发货操作</li>
+                </ul>
+            </div>
+            
+            <div class="func-box">
+                <div class="func-title">3.4 用户管理模块</div>
+                <ul>
+                    <li><strong>用户列表：</strong>展示所有注册用户信息</li>
+                    <li><strong>用户详情：</strong>查看用户个人信息、订单记录、收藏记录</li>
+                    <li><strong>用户操作：</strong>新增、删除用户账号</li>
+                </ul>
+            </div>
+            
+            <div class="func-box">
+                <div class="func-title">3.5 系统管理模块</div>
+                <ul>
+                    <li><strong>轮播图管理：</strong>新增、修改、删除首页轮播图</li>
+                    <li><strong>系统通知：</strong>发布系统公告和通知消息</li>
+                </ul>
+            </div>
+            
+            <div class="func-box">
+                <div class="func-title">3.6 互动模块</div>
+                <ul>
+                    <li><strong>论坛管理：</strong>查看论坛帖子，管理员可进行管理操作</li>
+                    <li><strong>在线留言：</strong>查看用户留言，进行回复操作</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>4. 使用指南</h3>
+            
+            <h4>4.1 登录操作</h4>
+            <ol>
+                <li>打开浏览器，访问系统登录页面</li>
+                <li>输入账号和密码</li>
+                <li>输入验证码（随机生成，点击可刷新）</li>
+                <li>选择登录角色（管理员/商家/用户）</li>
+                <li>点击"登录系统"按钮完成登录</li>
+            </ol>
+            
+            <h4>4.2 密码安全</h4>
+            <ul>
+                <li>密码长度需在6-30位之间</li>
+                <li>支持字母、数字和特殊字符（_!@#$%^&.*）</li>
+                <li>建议使用包含字母、数字、特殊字符的强密码</li>
+                <li>登录后可在"个人信息"页面修改密码</li>
+            </ul>
+            
+            <h4>4.3 权限说明</h4>
+            <p>系统根据登录角色自动分配菜单权限，不同角色看到的功能菜单不同。管理员拥有最高权限，可管理所有系统功能；商家可管理自己的店铺和商品；用户可进行购物、收藏、评论等操作。</p>
+            
+            <h4>4.4 系统退出</h4>
+            <p>用户登录后可随时退出系统，系统会清除登录状态和Session信息，确保账号安全。</p>
+        </div>
+        
+        <div class="section">
+            <h3>5. 系统配置</h3>
+            
+            <h4>5.1 环境配置</h4>
+            <table>
+                <tr>
+                    <th>配置项</th>
+                    <th>说明</th>
+                    <th>默认值</th>
+                </tr>
+                <tr>
+                    <td>VITE_APP_BASE_API</td>
+                    <td>后端API基础地址</td>
+                    <td>/api</td>
+                </tr>
+                <tr>
+                    <td>timeout</td>
+                    <td>请求超时时间</td>
+                    <td>20000ms</td>
+                </tr>
+            </table>
+            
+            <h4>5.2 依赖环境</h4>
+            <p>系统运行需安装以下依赖：Vue 3.3.4、Vue Router 4.2.2、Pinia 2.1.3、Element Plus 2.5.3、ECharts 5.4.3等。</p>
+        </div>
+        
+        <!-- 附录二：核心代码 -->
+        <h2>附录二：核心代码</h2>
+        
+        <div class="section">
+            <h3>1. 路由配置（router/index.ts）</h3>
+            <div class="code-block">
+                <pre>import { createRouter, createWebHashHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+import { Session } from '@/utils/storage'
+import { Key } from '@/stores/auth'
+
+export const dynamicRoutes: RouteRecordRaw[] = [
+    {
+        path: "/",
+        name: "layout",
+        redirect: "/home",
+        component: () => import('@/layout/index.vue'),
+        children: [
+            { path: "/home", name: "home", meta: { title: "首页", cache: true, icon: "&#xe611;" }, component: () => import("@/views/home.vue") },
+            { path: "/center", name: "center", meta: { title: "个人信息", icon: "&#xe90f;" }, component: () => import("@/views/center.vue") },
+            { path: "/updatePassword", name: "updatePassword", meta: { title: "修改密码", icon: "&#xe90f;" }, component: () => import("@/views/update-password.vue") },
+            { path: "/crk", name: "crk", meta: { title: "出入库管理", icon: "&#xe90f;" }, component: () => import("@/views/crk/index.vue") },
+            { path: "/forum", name: "forum", meta: { title: "论坛管理", icon: "&#xe90f;" }, component: () => import("@/views/forum/index.vue") },
+            { path: "/orders/:status", name: "orders", meta: { title: "订单管理", icon: "&#xe90f;" }, component: () => import("@/views/orders/index.vue") },
+            { path: "/news", name: "news", meta: { title: "系统通知", icon: "&#xe90f;" }, component: () => import("@/views/news/index.vue") },
+            { path: "/wodeshouzangguanli", name: "wodeshouzangguanli", meta: { title: "我的收藏", icon: "&#xe90f;" }, component: () => import("@/views/storeup/index.vue") },
+            { path: "/wenzhen", name: "wenzhen", meta: { title: "问诊", icon: "&#xe90f;" }, component: () => import("@/views/wd/index.vue") },
+            { path: "/messagess", name: "messagess", meta: { title: "在线留言", icon: "&#xe90f;" }, component: () => import("@/views/messagess/index.vue") },
+            { path: "/shangpinguanli", name: "shangpinguanli", meta: { title: "商品管理", icon: "&#xe90f;" }, component: () => import("@/views/shangpinguanli/index.vue") },
+            { path: "/shangpinfenlei", name: "shangpinfenlei", meta: { title: "商品分类", icon: "&#xe90f;" }, component: () => import("@/views/shangpinfenlei/index.vue") },
+            { path: "/dianpuxinxi", name: "dianpuxinxi", meta: { title: "店铺信息", icon: "&#xe90f;" }, component: () => import("@/views/dianpuxinxi/index.vue") },
+            { path: "/yonghu", name: "yonghu", meta: { title: "用户", icon: "&#xe90f;" }, component: () => import("@/views/yonghu/index.vue") },
+            { path: "/shangjia", name: "shangjia", meta: { title: "商家", icon: "&#xe90f;" }, component: () => import("@/views/shangjia/index.vue") },
+            { path: "/config", name: "config", meta: { title: "轮播图列表", icon: "&#xe90f;" }, component: () => import("@/views/config/index.vue") },
+            { path: '/401', name: 'NoPermission', component: () => import('@/views/error/401.vue') },
+            { path: '/:path(.*)*', name: 'NotFound', component: () => import('@/views/error/404.vue') },
+        ],
+    },
+    { path: '/login', name: 'Login', component: () => import('@/views/login/index.vue') }
+]
+
+const router = createRouter({
+    history: createWebHashHistory(),
+    routes: dynamicRoutes,
+})
+
+router.beforeEach((to, from) => {
+    const token = Session.get(Key.accessTokenKey)
+    if (!token && to.path !== '/login') {
+        return { path: '/login' }
+    }
+    return true
+})
+
+export default router</pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>2. 请求拦截器（utils/request.ts）</h3>
+            <div class="code-block">
+                <pre>import axios from 'axios'
+import type { AxiosInstance } from 'axios'
+import { ElMessage } from 'element-plus'
+import { useAuthStore } from '@/stores/auth'
+import router from '@/router'
+
+const request: AxiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_APP_BASE_API as string,
+    timeout: 20000,
+})
+
+// 请求拦截器
+request.interceptors.request.use((config) => {
+    const authStore = useAuthStore()
+    const accessToken = authStore.accessToken
+    if (accessToken) {
+        config.headers['Token'] = accessToken
+    }
+    return config
+}, (error) => {
+    return Promise.reject(error)
+})
+
+// 响应拦截器
+request.interceptors.response.use(response => {
+    const { data } = response
+    if (data.code === 0) {
+        return data
+    } else if (data.code === 401) {
+        ElMessage.error(data.msg)
+        setTimeout(() => {
+            router.push({ path: '/login' })
+        }, 300)
+    }
+    ElMessage.error(data.msg)
+    return Promise.reject(response)
+}, error => {
+    const { message, response } = error
+    if (message.indexOf('timeout') != -1) {
+        ElMessage.error('网络超时！')
+    } else if (message == 'Network Error') {
+        ElMessage.error('网络连接错误！')
+    } else {
+        if (response.data) ElMessage.error(response.statusText)
+        else ElMessage.error("接口路径找不到")
+    }
+    return Promise.reject(error)
+})
+
+export default request</pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>3. 认证状态管理（stores/auth.ts）</h3>
+            <div class="code-block">
+                <pre>import { defineStore } from 'pinia'
+import { GetToken } from '@/api/auth'
+import { Session, Local } from '@/utils/storage'
+
+export const Key = {
+    accessTokenKey: 'accessToken',
+    userInfoKey: 'userInfo',
+}
+
+export const useAuthStore = defineStore('auth', {
+    state: () => {
+        return {
+            accessToken: Session.get(Key.accessTokenKey),
+            users: Session.get(Key.userInfoKey)
+        }
+    },
+
+    actions: {
+        userLogin(loginData: any, url: string) {
+            return new Promise((resolve, reject) => {
+                GetToken(loginData, url).then((res: any) => {
+                    this.accessToken = res.token
+                    if (Session.get(Key.accessTokenKey) != null && Session.get(Key.accessTokenKey) != '') {
+                        Session.remove(Key.accessTokenKey)
+                    }
+                    Session.set(Key.accessTokenKey, res.token)
+                    resolve(res)
+                }).catch((error: Error) => {
+                    reject(error)
+                })
+            })
+        }
+    }
+})</pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>4. 存储工具（utils/storage.ts）</h3>
+            <div class="code-block">
+                <pre>// 浏览器永久缓存 (localStorage)
+export const Local = {
+    set(key: string, val: any) {
+        window.localStorage.setItem(key, JSON.stringify(val || ''))
+    },
+    get(key: string) {
+        let json: any = window.localStorage.getItem(key)
+        return JSON.parse(json)
+    },
+    remove(key: string) {
+        window.localStorage.removeItem(key)
+    },
+    clear() {
+        window.localStorage.clear()
+    },
+}
+
+// 浏览器临时缓存 (sessionStorage)
+export const Session = {
+    set(key: string, val: any) {
+        window.sessionStorage.setItem(key, JSON.stringify(val || ''))
+    },
+    get(key: string) {
+        let json: any = window.sessionStorage.getItem(key)
+        return JSON.parse(json)
+    },
+    remove(key: string) {
+        window.sessionStorage.removeItem(key)
+    },
+    clear() {
+        window.sessionStorage.clear()
+    },
+}</pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>5. 认证API（api/auth.ts）</h3>
+            <div class="code-block">
+                <pre>import request from "@/utils/request"
+import { Session } from '@/utils/storage'
+import { Key } from '@/stores/auth'
+
+export function GetToken(data: any, url: string) {
+    return request({
+        url: `${url}`,
+        method: 'POST',
+        data
+    })
+}
+
+export function GetUsersToken() {
+    const tableName = Session.get("tableName")
+    return request({
+        url: `${tableName}/session`,
+        method: 'POST'
+    })
+}</pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>6. 菜单配置（utils/menu.ts）</h3>
+            <div class="code-block">
+                <pre>const menu = {
+    list() {
+        return [
+            {
+                "frontMenu": [
+                    { "child": [{ "buttons": ["查看", "查看评论", "回复"], "menu": "商品管理", "tableName": "shangpinguanli" }], "menu": "商品管理" },
+                    { "child": [{ "buttons": ["查看", "查看评论", "回复"], "menu": "店铺信息", "tableName": "dianpuxinxi" }], "menu": "店铺信息" },
+                    { "child": [{ "buttons": ["删除", "查看"], "menu": "我的收藏管理", "tableName": "wodeshouzangguanli" }], "menu": "我的收藏管理" },
+                    { "child": [{ "buttons": ["查看"], "menu": "系统通知", "tableName": "news" }], "menu": "系统通知" },
+                    { "child": [{ "buttons": ["查看"], "menu": "论坛管理", "tableName": "forum" }], "menu": "论坛" },
+                    { "child": [{ "buttons": ["查看"], "menu": "在线留言", "tableName": "messagess" }], "menu": "在线留言" }
+                ],
+                "roleName": "用户",
+                "tableName": "yonghu"
+            },
+            {
+                "backMenu": [
+                    { "child": [{ "buttons": ["查看", "修改", "删除"], "menu": "商品管理评论", "tableName": "discussshangpinguanli" }], "menu": "商品管理评论" },
+                    { "child": [{ "buttons": ["新增", "删除", "修改", "查看", "出入库", "查看评论", "回复"], "menu": "商品管理", "tableName": "shangpinguanli" }], "menu": "商品管理" },
+                    { "child": [{ "buttons": ["查看"], "menu": "商品分类", "tableName": "shangpinfenlei" }], "menu": "商品分类" },
+                    { "child": [{ "buttons": ["查看", "修改", "删除"], "menu": "店铺信息评论", "tableName": "discussdianpuxinxi" }], "menu": "店铺信息评论" },
+                    { "child": [{ "buttons": ["新增", "删除", "修改", "查看", "查看评论", "回复"], "menu": "店铺信息", "tableName": "dianpuxinxi" }], "menu": "店铺信息" },
+                    { "child": [
+                        { "buttons": ["查看"], "menu": "未支付订单", "tableName": "orders/未支付" },
+                        { "buttons": ["查看", "发货"], "menu": "已支付订单", "tableName": "orders/已支付" },
+                        { "buttons": ["查看"], "menu": "已完成订单", "tableName": "orders/已完成" },
+                        { "buttons": ["查看"], "menu": "已取消订单", "tableName": "orders/已取消" },
+                        { "buttons": ["查看"], "menu": "已退款订单", "tableName": "orders/已退款" },
+                        { "buttons": ["查看"], "menu": "已发货订单", "tableName": "orders/已发货" }
+                    ], "menu": "订单管理" }
+                ],
+                "frontMenu": [/* 用户端菜单 */],
+                "roleName": "商家",
+                "tableName": "shangjia"
+            },
+            {
+                "backMenu": [/* 管理员后端菜单 */],
+                "roleName": "管理员",
+                "tableName": "users"
+            },
+            {
+                "ykMenu": [{ "child": [{ "buttons": ["查看"], "menu": "系统通知", "tableName": "news" }], "menu": "系统通知" }],
+                "roleName": "游客",
+                "tableName": "游客"
+            }
+        ]
+    }
+}
+export default menu</pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>7. 登录页面核心逻辑（views/login/index.vue）</h3>
+            <div class="code-block">
+                <pre>&lt;script lang="ts" setup&gt;
+import { ref, reactive, toRefs, onMounted } from 'vue'
+import { isUsername, isPassword } from '@/utils/validate'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter, useRoute } from 'vue-router'
+import { Session } from '@/utils/storage'
+import menu from "@/utils/menu"
+
+const authStore = useAuthStore()
+const router = useRouter()
+const route = useRoute()
+
+const state = reactive({
+    loading: false,
+    loginData: {
+        username: '',
+        password: '',
+        role: ''
+    } as LoginData,
+    tableName: ''
+})
+
+const menus = menu.list()
+const { loading, loginData, tableName } = { ...toRefs(state) }
+
+const showPassword = ref(false)
+const formData = reactive({ captcha: '' })
+const captchaCode = ref('')
+
+const generateCaptcha = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'
+    let captcha = ''
+    for (let i = 0; i < 4; i++) {
+        captcha += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return captcha
+}
+
+const refreshCaptcha = () => {
+    captchaCode.value = generateCaptcha()
+}
+
+const togglePassword = () => {
+    showPassword.value = !showPassword.value
+}
+
+onMounted(() => {
+    refreshCaptcha()
+})
+
+const handleSubmit = async () => {
+    state.loading = true
+    try {
+        if (!state.loginData.username || !state.loginData.password) {
+            notify("账号密码不能为空", { type: "error" })
+            return
+        }
+        if (captchaCode.value.toUpperCase() !== formData.captcha.toUpperCase()) {
+            notify("验证码错误", { type: "error" })
+            refreshCaptcha()
+            return
+        }
+        for (let i = 0; i < menus.length; i++) {
+            if (menus[i].roleName == state.loginData.role) {
+                state.tableName = menus[i].tableName
+            }
+        }
+        const res = await authStore.userLogin(state.loginData, `${state.tableName}/login`)
+        Session.set("tableName", state.tableName)
+        Session.set("role", state.loginData.role)
+        Session.set("adminName", state.loginData.username)
+        router.replace({ path: <string>route.query?.redirect || '/' })
+    } finally {
+        state.loading = false
+    }
+}
+&lt;/script&gt;</pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>8. 验证工具（utils/validate.ts - 核心验证函数）</h3>
+            <div class="code-block">
+                <pre>// 校验用户名：6-30位数字、字母和下划线
+export function isUsername(str: string) {
+    const valid_map = /^[a-zA-Z0-9_:]{6,30}$/
+    return valid_map.test(str)
+}
+
+// 校验密码：6-30位字母、数字和特殊字符
+export function isPassword(str: string) {
+    const valid_map = /^[0-9a-zA-Z_!@#$%^&\.*]{6,30}$/
+    return valid_map.test(str)
+}
+
+// 校验手机号
+export function isMobile(str: string) {
+    const valid_map = 11 && /^1(3|4|5|7|8|9)\d{9}$/
+    return valid_map.test(str)
+}
+
+// 校验邮箱
+export function isEmail(str: string) {
+    const valid_map = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+    return valid_map.test(str)
+}
+
+// 验证码验证：4~6位数字、字母
+export function isCheckCode(str: string) {
+    const valid_map = /^[0-9a-zA-Z]{4,6}$/
+    return valid_map.test(str)
+}
+
+// 密码强度判断
+export function isPasswordStrength(str: string) {
+    let v = '弱'
+    if (/^(?:\d+|[a-zA-Z]+|[!@#$%^&\.*]+){6,30}$/.test(str)) v = '弱'
+    else if (/^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&\.*]+$)[a-zA-Z\d!@#$%^&\.*]{6,30}$/.test(str)) v = '中'
+    else if (/^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&\.*]+$)(?![a-zA-z\d]+$)(?![a-zA-z!@#$%^&\.*]+$)(?![\d!@#$%^&\.*]+$)[a-zA-Z\d!@#$%^&\.*]{6,30}$/.test(str)) v = '强'
+    return v
+}</pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>9. 项目依赖配置（package.json）</h3>
+            <div class="code-block">
+                <pre>{
+    "name": "jmhjglxt-admin",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "run-p type-check build-only",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@element-plus/icons-vue": "2.3.1",
+        "@layui/layui-vue": "2.19.0",
+        "@wangeditor/editor": "5.1.23",
+        "@wangeditor/editor-for-vue": "5.1.12",
+        "axios": "1.6.5",
+        "element-plus": "2.5.3",
+        "echarts": "5.4.3",
+        "pinia": "2.1.3",
+        "vue": "3.3.4",
+        "vue-router": "4.2.2"
+    },
+    "devDependencies": {
+        "@types/node": "18.16.17",
+        "@vitejs/plugin-vue": "4.2.3",
+        "typescript": "~5.0.4",
+        "vite": "4.3.9",
+        "vue-tsc": "1.6.5"
+    }
+}</pre>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 14px;">
+            <p>校园掌上购物系统 - 附录文档</p>
+            <p>© 2023 校园掌上购物 版权所有</p>
+        </div>
+    </div>
+</body>
+</html>

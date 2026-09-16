@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>校园掌上购物系统 - 核心代码</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', SimHei, sans-serif; line-height: 1.8; color: #333; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 30px; }
+        h1 { text-align: center; font-size: 26px; margin-bottom: 30px; color: #1a1a1a; }
+        h2 { font-size: 20px; margin: 30px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #4a6cf7; color: #4a6cf7; }
+        h3 { font-size: 16px; margin: 20px 0 12px; color: #2c3e50; }
+        p { margin: 8px 0; text-indent: 2em; }
+        ul { margin: 8px 0 8px 25px; }
+        li { margin: 5px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        table, th, td { border: 1px solid #ddd; }
+        th, td { padding: 10px; text-align: left; }
+        th { background-color: #f5f7fa; font-weight: bold; }
+        .code-block { background-color: #f8f9fa; border-radius: 5px; padding: 12px; margin: 12px 0; overflow-x: auto; font-family: Consolas, monospace; font-size: 12px; line-height: 1.5; }
+        .code-block pre { margin: 0; white-space: pre-wrap; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>校园掌上购物系统 - 核心代码</h1>
+        
+        <h2>1. 登录模块</h2>
+        
+        <h3>1.1 登录页面核心逻辑（views/login/index.vue）</h3>
+        <div class="code-block">
+<pre>&lt;script setup lang="ts"&gt;
+import { ref, reactive, toRefs, onMounted } from 'vue'
+import { isUsername, isPassword } from '@/utils/validate'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter, useRoute } from 'vue-router'
+import { Session } from '@/utils/storage'
+import menu from "@/utils/menu"
+
+const authStore = useAuthStore()
+const router = useRouter()
+const route = useRoute()
+
+const state = reactive({
+    loading: false,
+    loginData: { username: '', password: '', role: '' },
+    tableName: ''
+})
+
+const menus = menu.list()
+const { loading, loginData, tableName } = { ...toRefs(state) }
+
+const showPassword = ref(false)
+const formData = reactive({ captcha: '' })
+const captchaCode = ref('')
+
+// 生成验证码
+const generateCaptcha = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'
+    let captcha = ''
+    for (let i = 0; i < 4; i++) {
+        captcha += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return captcha
+}
+
+const refreshCaptcha = () => {
+    captchaCode.value = generateCaptcha()
+}
+
+const handleSubmit = async () => {
+    state.loading = true
+    try {
+        if (!state.loginData.username || !state.loginData.password) {
+            notify("账号密码不能为空", { type: "error" })
+            return
+        }
+        // 验证码校验
+        if (captchaCode.value.toUpperCase() !== formData.captcha.toUpperCase()) {
+            notify("验证码错误", { type: "error" })
+            refreshCaptcha()
+            return
+        }
+        // 根据角色获取表名
+        for (let i = 0; i < menus.length; i++) {
+            if (menus[i].roleName == state.loginData.role) {
+                state.tableName = menus[i].tableName
+            }
+        }
+        // 调用登录接口
+        const res = await authStore.userLogin(state.loginData, `${state.tableName}/login`)
+        Session.set("tableName", state.tableName)
+        Session.set("role", state.loginData.role)
+        Session.set("adminName", state.loginData.username)
+        router.replace({ path: route.query?.redirect || '/' })
+    } finally {
+        state.loading = false
+    }
+}
+&lt;/script&gt;</pre>
+        </div>
+        
+        <h3>1.2 认证状态管理（stores/auth.ts）</h3>
+        <div class="code-block">
+<pre>import { defineStore } from 'pinia'
+import { GetToken } from '@/api/auth'
+import { Session, Local } from '@/utils/storage'
+
+export const Key = {
+    accessTokenKey: 'accessToken',
+    userInfoKey: 'userInfo',
+}
+
+export const useAuthStore = defineStore('auth', {
+    state: () => {
+        return {
+            accessToken: Session.get(Key.accessTokenKey),
+            users: Session.get(Key.userInfoKey)
+        }
+    },
+
+    actions: {
+        userLogin(loginData: any, url: string) {
+            return new Promise((resolve, reject) => {
+                GetToken(loginData, url).then((res: any) => {
+                    this.accessToken = res.token
+                    if (Session.get(Key.accessTokenKey) != null) {
+                        Session.remove(Key.accessTokenKey)
+                    }
+                    Session.set(Key.accessTokenKey, res.token)
+                    resolve(res)
+                }).catch((error: Error) => {
+                    reject(error)
+                })
+            })
+        }
+    }
+})</pre>
+        </div>
+        
+        <h3>1.3 认证API（api/auth.ts）</h3>
+        <div class="code-block">
+<pre>import request from "@/utils/request"
+import { Session } from '@/utils/storage'
+import { Key } from '@/stores/auth'
+
+export function GetToken(data: any, url: string) {
+    return request({
+        url: `${url}`,
+        method: 'POST',
+        data
+    })
+}
+
+export function GetUsersToken() {
+    const tableName = Session.get("tableName")
+    return request({
+        url: `${tableName}/session`,
+        method: 'POST'
+    })
+}</pre>
+        </div>
+        
+        <h2>2. 购物车模块</h2>
+        
+        <h3>2.1 购物车列表（views/cart/index.vue）</h3>
+        <div class="code-block">
+<pre>const AddEdit = defineAsyncComponent(() => import('@/views/cart/add-edit.vue'));
+
+function getDateList() {
+    const params = {
+        page: state.page.current,
+        limit: state.page.size,
+    }
+    request({
+        url: 'cart/page',
+        method: 'get',
+        params
+    }).then(({ data }) => {
+        state.page.total = data.total;
+        state.tableList = data.list;
+    })
+}
+
+// 删除购物车商品
+function handleDelete(row: any) {
+    request({
+        url: `cart/delete`,
+        method: 'post',
+        data: [row.id]
+    }).then(({ data }) => {
+        notify("删除成功", { type: 'success' });
+        getDateList();
+    })
+}
+
+// 多选删除
+function listdel() {
+    const ids = toRaw(state.ids)
+    request({
+        url: `cart/delete`,
+        method: 'post',
+        data: ids
+    }).then(({ data }) => {
+        notify("删除成功", { type: 'success' });
+        getDateList();
+    })
+}</pre>
+        </div>
+        
+        <h3>2.2 购物车添加/编辑（views/cart/add-edit.vue）</h3>
+        <div class="code-block">
+<pre>function submitForm() {
+    formRef.value?.validate((valid: boolean) => {
+        if (!valid) return;
+        state.loadding = true;
+        if (state.type == 'cross') {
+            request({
+                url: `cart/save`,
+                method: 'post',
+                data: state.formData
+            }).then(({ data }) => {
+                notify("操作成功", { type: 'success' });
+                state.loadding = false;
+                close();
+                emit("refresh");
+            })
+        } else {
+            request({
+                url: `cart/${!state.formData.id ? "save" : "update"}`,
+                method: 'post',
+                data: state.formData
+            }).then(({ data }) => {
+                notify("操作成功", { type: 'success' });
+                state.loadding = false;
+                close();
+                emit("refresh");
+            })
+        }
+    })
+}</pre>
+        </div>
+        
+        <h2>3. 订单模块</h2>
+        
+        <h3>3.1 订单列表（views/orders/index.vue）</h3>
+        <div class="code-block">
+<pre>// 监听订单路由参数
+watch(() => router.currentRoute.value.path,
+    (toPath) => {
+        state.orderStatus = router.currentRoute.value.params.status;
+        getDateList();
+    }, { immediate: true, deep: true })
+
+function getDateList() {
+    const params = {
+        page: state.page.current,
+        limit: state.page.size,
+        status: state.orderStatus,
+    }
+    if (state.query.orderid != '') {
+        params['orderid'] = '%' + state.query.orderid + '%'
+    }
+    if (state.query.goodname != '') {
+        params['goodname'] = '%' + state.query.goodname + '%'
+    }
+    request({
+        url: 'orders/page',
+        method: 'get',
+        params
+    }).then(({ data }) => {
+        state.page.total = data.total;
+        state.tableList = data.list;
+    })
+}
+
+// 商家发货
+function handleEdit(row: any) {
+    confirm("确认要发货吗？").then(() => {
+        row.status = "已发货";
+        request({
+            url: 'orders/update',
+            method: 'post',
+            data: row
+        }).then((data) => {
+            notify("操作成功", { type: 'success' });
+            getDateList();
+        })
+    })
+}
+
+// 用户确认收货
+function handleEdit1(row: any) {
+    confirm("确认要收货吗？").then(() => {
+        row.status = "已完成";
+        request({
+            url: 'orders/update',
+            method: 'post',
+            data: row
+        }).then((data) => {
+            notify("操作成功", { type: 'success' });
+            getDateList();
+        })
+    })
+}</pre>
+        </div>
+        
+        <h2>4. 论坛模块</h2>
+        
+        <h3>4.1 论坛列表（views/forum/index.vue）</h3>
+        <div class="code-block">
+<pre>function getDateList() {
+    const params = {
+        page: state.page.current,
+        limit: state.page.size,
+    }
+    if (state.query.title != '') {
+        params['title'] = '%' + state.query.title + '%'
+    }
+    request({
+        url: 'forum/page',
+        method: 'post',
+        params
+    }).then(({ data }) => {
+        state.page.total = data.total;
+        state.tableList = data.list;
+    })
+}
+
+// 删除帖子
+function handleDelete(row: any) {
+    request({
+        url: `forum/delete`,
+        method: 'post',
+        data: [row.id]
+    }).then(({ data }) => {
+        notify("删除成功", { type: 'success' });
+        getDateList();
+    })
+}
+
+// 多选删除
+function listdel() {
+    const ids = toRaw(state.ids)
+    request({
+        url: `forum/delete`,
+        method: 'post',
+        data: ids
+    }).then(({ data }) => {
+        notify("删除成功", { type: 'success' });
+        getDateList();
+    })
+}</pre>
+        </div>
+        
+        <h2>5. 在线留言模块</h2>
+        
+        <h3>5.1 在线留言列表（views/messagess/index.vue）</h3>
+        <div class="code-block">
+<pre>function getDateList() {
+    const params = {
+        page: state.page.current,
+        limit: state.page.size,
+    }
+    if (state.query.username != '') {
+        params['username'] = '%' + state.query.username + '%'
+    }
+    request({
+        url: 'messagess/page',
+        method: 'post',
+        params
+    }).then(({ data }) => {
+        state.page.total = data.total;
+        state.tableList = data.list;
+    })
+}
+
+// 删除留言
+function handleDelete(row: any) {
+    layer.confirm("是否要删除", {
+        btn: [
+            { text: '确认', callback: (id) => {
+                request({
+                    url: `messagess/delete`,
+                    method: 'post',
+                    data: [row.id]
+                }).then(({ data }) => {
+                    layer.msg("删除成功", { time: 1000, icon: 1 })
+                    layer.close(id);
+                    getDateList();
+                })
+            }},
+            { text: '取消', callback: (id) => { layer.close(id); } }
+        ]
+    })
+}
+
+// 回复留言
+function messagesbyid(row: any) {
+    state.detail = row;
+    state.dialogFormVisible = true;
+}
+
+function onSubmit() {
+    request({
+        url: 'messagess/update',
+        method: "post",
+        data: state.detail
+    }).then((data) => {
+        if (data && data.code === 0) {
+            notify("回复成功", { type: 'success' });
+            state.ruleForm = {};
+            state.dialogFormVisible = false;
+            getDateList();
+        }
+    });
+}</pre>
+        </div>
+        
+        <h2>6. 商品管理模块</h2>
+        
+        <h3>6.1 商品列表（views/shangpinguanli/index.vue）</h3>
+        <div class="code-block">
+<pre>function getDateList() {
+    const params = {
+        page: state.page.current,
+        limit: state.page.size,
+    }
+    if (state.query.mingcheng != '') {
+        params['mingcheng'] = '%' + state.query.mingcheng + '%'
+    }
+    if (state.query.fenleimingcheng != '') {
+        params['fenleimingcheng'] = '%' + state.query.fenleimingcheng + '%'
+    }
+    if (state.query.dianpumingcheng != '') {
+        params['dianpumingcheng'] = '%' + state.query.dianpumingcheng + '%'
+    }
+    request({
+        url: 'shangpinguanli/page',
+        method: 'get',
+        params
+    }).then(({ data }) => {
+        state.page.total = data.total;
+        state.tableList = data.list;
+    })
+}
+
+// 删除商品
+function handleDelete(row: any) {
+    request({
+        url: `shangpinguanli/delete`,
+        method: 'post',
+        data: [row.id]
+    }).then(({ data }) => {
+        notify("删除成功", { type: 'success' });
+        getDateList();
+    })
+}
+
+// 审核商品
+function shDialog(row: any) {
+    state.sfshVisiable = true;
+    state.formData = row;
+}
+
+function shHandler() {
+    confirm("确认要审核吗？").then(() => {
+        request({
+            url: 'shangpinguanli/update',
+            method: 'post',
+            data: state.formData
+        }).then((data) => {
+            state.sfshVisiable = false;
+            notify("操作成功", { type: 'success' });
+            getDateList();
+        })
+    })
+}
+
+// 出入库
+const crkRef = ref();
+const crk = (row: any, tablename: string) => {
+    crkRef.value.open('出入库', 'add', tablename, row);
+}</pre>
+        </div>
+        
+        <h2>7. 店铺管理模块</h2>
+        
+        <h3>7.1 店铺列表（views/dianpuxinxi/index.vue）</h3>
+        <div class="code-block">
+<pre>function getDateList() {
+    const params = {
+        page: state.page.current,
+        limit: state.page.size,
+    }
+    if (state.query.dianpumingcheng != '') {
+        params['dianpumingcheng'] = '%' + state.query.dianpumingcheng + '%'
+    }
+    if (state.query.nicheng != '') {
+        params['nicheng'] = '%' + state.query.nicheng + '%'
+    }
+    request({
+        url: 'dianpuxinxi/page',
+        method: 'get',
+        params
+    }).then(({ data }) => {
+        state.page.total = data.total;
+        state.tableList = data.list;
+    })
+}
+
+// 删除店铺
+function handleDelete(row: any) {
+    request({
+        url: `dianpuxinxi/delete`,
+        method: 'post',
+        data: [row.id]
+    }).then(({ data }) => {
+        notify("删除成功", { type: 'success' });
+        getDateList();
+    })
+}
+
+// 审核店铺
+function shDialog(row: any) {
+    state.sfshVisiable = true;
+    state.formData = row;
+}
+
+function shHandler() {
+    confirm("确认要审核吗？").then(() => {
+        request({
+            url: 'dianpuxinxi/update',
+            method: 'post',
+            data: state.formData
+        }).then((data) => {
+            state.sfshVisiable = false;
+            notify("操作成功", { type: 'success' });
+            getDateList();
+        })
+    })
+}</pre>
+        </div>
+        
+        <h2>8. 商家管理模块</h2>
+        
+        <h3>8.1 商家列表（views/shangjia/index.vue）</h3>
+        <div class="code-block">
+<pre>function getDateList() {
+    const params = {
+        page: state.page.current,
+        limit: state.page.size,
+    }
+    if (state.query.zhanghao != '') {
+        params['zhanghao'] = '%' + state.query.zhanghao + '%'
+    }
+    request({
+        url: 'shangjia/page',
+        method: 'get',
+        params
+    }).then(({ data }) => {
+        state.page.total = data.total;
+        state.tableList = data.list;
+    })
+}
+
+// 删除商家
+function handleDelete(row: any) {
+    request({
+        url: `shangjia/delete`,
+        method: 'post',
+        data: [row.id]
+    }).then(({ data }) => {
+        notify("删除成功", { type: 'success' });
+        getDateList();
+    })
+}
+
+// 多选删除
+function listdel() {
+    const ids = toRaw(state.ids)
+    request({
+        url: `shangjia/delete`,
+        method: 'post',
+        data: ids
+    }).then(({ data }) => {
+        notify("删除成功", { type: 'success' });
+        getDateList();
+    })
+}</pre>
+        </div>
+        
+        <h2>9. 用户管理模块</h2>
+        
+        <h3>9.1 用户列表（views/yonghu/index.vue）</h3>
+        <div class="code-block">
+<pre>function getDateList() {
+    const params = {
+        page: state.page.current,
+        limit: state.page.size,
+    }
+    if (state.query.zhanghao != '') {
+        params['zhanghao'] = '%' + state.query.zhanghao + '%'
+    }
+    request({
+        url: 'yonghu/page',
+        method: 'get',
+        params
+    }).then(({ data }) => {
+        state.page.total = data.total;
+        state.tableList = data.list;
+    })
+}
+
+// 删除用户
+function handleDelete(row: any) {
+    request({
+        url: `yonghu/delete`,
+        method: 'post',
+        data: [row.id]
+    }).then(({ data }) => {
+        notify("删除成功", { type: 'success' });
+        getDateList();
+    })
+}
+
+// 多选删除
+function listdel() {
+    const ids = toRaw(state.ids)
+    request({
+        url: `yonghu/delete`,
+        method: 'post',
+        data: ids
+    }).then(({ data }) => {
+        notify("删除成功", { type: 'success' });
+        getDateList();
+    })
+}</pre>
+        </div>
+        
+        <h2>10. 公共API调用</h2>
+        
+        <h3>10.1 请求拦截器（utils/request.ts）</h3>
+        <div class="code-block">
+<pre>import axios from 'axios'
+import type { AxiosInstance } from 'axios'
+import { ElMessage } from 'element-plus'
+import { useAuthStore } from '@/stores/auth'
+import router from '@/router'
+
+const request: AxiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_APP_BASE_API as string,
+    timeout: 20000,
+})
+
+// 请求拦截器
+request.interceptors.request.use((config) => {
+    const authStore = useAuthStore()
+    const accessToken = authStore.accessToken
+    if (accessToken) {
+        config.headers['Token'] = accessToken
+    }
+    return config
+}, (error) => {
+    return Promise.reject(error)
+})
+
+// 响应拦截器
+request.interceptors.response.use(response => {
+    const { data } = response
+    if (data.code === 0) {
+        return data
+    } else if (data.code === 401) {
+        ElMessage.error(data.msg)
+        setTimeout(() => {
+            router.push({ path: '/login' })
+        }, 300)
+    }
+    ElMessage.error(data.msg)
+    return Promise.reject(response)
+}, error => {
+    const { message } = error
+    if (message.indexOf('timeout') != -1) {
+        ElMessage.error('网络超时！')
+    } else if (message == 'Network Error') {
+        ElMessage.error('网络连接错误！')
+    }
+    return Promise.reject(error)
+})
+
+export default request</pre>
+        </div>
+        
+        <h3>10.2 存储工具（utils/storage.ts）</h3>
+        <div class="code-block">
+<pre>// 浏览器永久缓存 (localStorage)
+export const Local = {
+    set(key: string, val: any) {
+        window.localStorage.setItem(key, JSON.stringify(val || ''))
+    },
+    get(key: string) {
+        let json = window.localStorage.getItem(key)
+        return JSON.parse(json)
+    },
+    remove(key: string) {
+        window.localStorage.removeItem(key)
+    },
+    clear() {
+        window.localStorage.clear()
+    },
+}
+
+// 浏览器临时缓存 (sessionStorage)
+export const Session = {
+    set(key: string, val: any) {
+        window.sessionStorage.setItem(key, JSON.stringify(val || ''))
+    },
+    get(key: string) {
+        let json = window.sessionStorage.getItem(key)
+        return JSON.parse(json)
+    },
+    remove(key: string) {
+        window.sessionStorage.removeItem(key)
+    },
+    clear() {
+        window.sessionStorage.clear()
+    },
+}</pre>
+        </div>
+        
+        <p style="text-align: center; margin-top: 40px; padding-top: 15px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
+            校园掌上购物系统 - 核心代码<br>
+            © 2023 校园掌上购物 版权所有
+        </p>
+    </div>
+</body>
+</html>
