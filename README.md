@@ -1,17 +1,16 @@
 # 校园掌上购物系统
 
-> 一个面向高校师生的综合性校园电商平台，采用前后端分离架构，包含 **移动端（uni-app）+ 管理后台（Vue 3）+ 服务端（Spring Boot）** 三部分。支持管理员、商家、用户、游客四类角色，覆盖商品/店铺管理、购物车与订单、论坛互动、在线留言、收藏、出入库、实时通讯、AI 智能问答等场景。
+> 一个面向高校师生的综合性校园电商平台，采用前后端分离架构，包含 **移动端（uni-app）+ 管理后台（Vue 3）+ 服务端（Spring Boot）** 三部分。支持管理员、商家、用户三类角色，覆盖商品/店铺管理、购物车与订单、论坛互动、在线留言、收藏、出入库、实时通讯等场景。
 
 ---
 
 ## ✨ 功能特性
 
-- **多角色权限**：管理员 / 商家 / 用户 / 游客，基于 Shiro + Token 的菜单级权限控制
+- **多角色权限**：管理员 / 商家 / 用户 ，基于 Shiro + Token 的菜单级权限控制
 - **商品与店铺**：商品分类、商品上下架与审核、店铺管理与评论
 - **交易闭环**：购物车、订单（待支付/已支付/已发货/已完成/已取消/已退款）、收货地址管理
 - **校园互动**：论坛发帖与回复、在线留言、系统通知
 - **实时通讯**：基于 WebSocket 的聊天 / 私信（商家 ↔ 用户）
-- **AI 智能问答**：集成阿里云通义千问（DashScope），为"问诊/咨询"场景提供 AI 辅助
 - **数据可视化**：管理后台基于 ECharts 的统计数据展示（含词云）
 - **跨端移动端**：uni-app 一套代码可编译 H5 / 微信小程序 / App
 
@@ -35,8 +34,6 @@
 | 服务端 | Spring Boot 2.2.2（Java 8）、MyBatis-Plus、Apache Shiro、MySQL、WebSocket、FastJson、Hutool、Lombok |
 | 管理后台 | Vue 3.3 + TypeScript + Vite 4 + Pinia + Vue Router + Element Plus + ECharts + TailwindCSS |
 | 移动端 | uni-app（Vue 语法），可编译 H5 / 微信小程序 / App |
-| AI 能力 | 阿里云通义千问（DashScope）+ 百度 AI SDK |
-
 ---
 
 ## 📁 项目结构
@@ -103,7 +100,6 @@ java -jar target/springbootzkgw-0.0.1-SNAPSHOT.jar
 
 后端默认地址：**http://localhost:8080/springbootzkgw**
 
-> AI 智能问答（通义千问）需在 `com/utils/Main.java` 中配置阿里云 DashScope API Key 后方可使用。
 
 ---
 
@@ -159,7 +155,7 @@ npm run dev:h5
 
 ## 📝 模块一览
 
-后端接口（`com.controller`）覆盖：用户、商家、商品、商品分类、店铺、购物车、订单、地址、论坛、系统通知、在线留言、收藏、出入库/库房/出库、聊天、信件、问诊、预约、租赁、轮播图配置、文件上传、AI 智能问答等。
+后端接口（`com.controller`）覆盖：用户、商家、商品、商品分类、店铺、购物车、订单、地址、论坛、系统通知、在线留言、收藏、出入库/库房/出库、聊天、信件、问诊、预约、租赁、轮播图配置、文件上传等。
 
 ---
 
@@ -169,4 +165,4 @@ npm run dev:h5
 
 ---
 
-Made with ❤️ by [你的名字 / GitHub 用户名]
+Made with ❤️ by [SHAZIITOO]
